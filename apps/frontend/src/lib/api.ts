@@ -1,7 +1,9 @@
 import axios from "axios"
 
+const API_URL = import.meta.env.VITE_API_URL || ""
+
 const api = axios.create({
-  baseURL: "/auth",
+  baseURL: `${API_URL}/auth`,
 })
 
 let accessToken: string | null = null
@@ -33,7 +35,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("refresh_token")
       if (refreshToken) {
         try {
-          const { data } = await axios.post("/auth/refresh", {
+          const { data } = await axios.post(`${API_URL}/auth/refresh`, {
             refresh_token: refreshToken,
           })
           setAccessToken(data.access_token)
@@ -82,7 +84,7 @@ export async function refreshTokens(refreshToken: string): Promise<TokenResponse
   return data
 }
 
-export const client = axios.create({ baseURL: "/" })
+export const client = axios.create({ baseURL: `${API_URL}/` })
 
 client.interceptors.request.use((config) => {
   if (accessToken) {
@@ -100,7 +102,7 @@ client.interceptors.response.use(
       const refreshToken = localStorage.getItem("refresh_token")
       if (refreshToken) {
         try {
-          const { data } = await axios.post("/auth/refresh", {
+          const { data } = await axios.post(`${API_URL}/auth/refresh`, {
             refresh_token: refreshToken,
           })
           setAccessToken(data.access_token)
