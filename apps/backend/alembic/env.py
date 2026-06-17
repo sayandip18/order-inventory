@@ -10,6 +10,8 @@ from alembic import context
 from app.config import settings
 from app.database import Base
 from app.models.user import User  # noqa: F401
+from app.models.customer import Customer  # noqa: F401
+from app.models.product import Product  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
