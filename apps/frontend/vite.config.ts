@@ -12,7 +12,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/auth": "http://localhost:8000",
+      "/auth": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
     },
   },
 })
