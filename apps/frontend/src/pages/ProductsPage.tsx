@@ -41,7 +41,7 @@ const productSchema = yup.object({
     .required("Quantity is required")
     .integer("Quantity must be a whole number")
     .min(0, "Quantity cannot be negative"),
-});
+}).required();
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -80,7 +80,9 @@ export default function ProductsPage() {
         setError("Failed to load products.");
         setLoading(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [page, search, refreshKey]);
 
   function reload() {
@@ -178,7 +180,9 @@ export default function ProductsPage() {
                     colSpan={5}
                     className="px-4 py-8 text-center text-muted-foreground"
                   >
-                    {search ? "No products match your search." : "No products yet."}
+                    {search
+                      ? "No products match your search."
+                      : "No products yet."}
                   </td>
                 </tr>
               ) : (
@@ -230,7 +234,10 @@ export default function ProductsPage() {
                 variant="outline"
                 size="sm"
                 disabled={page <= 1}
-                onClick={() => { setLoading(true); setPage((p) => p - 1); }}
+                onClick={() => {
+                  setLoading(true);
+                  setPage((p) => p - 1);
+                }}
               >
                 Previous
               </Button>
@@ -241,7 +248,10 @@ export default function ProductsPage() {
                 variant="outline"
                 size="sm"
                 disabled={page >= totalPages}
-                onClick={() => { setLoading(true); setPage((p) => p + 1); }}
+                onClick={() => {
+                  setLoading(true);
+                  setPage((p) => p + 1);
+                }}
               >
                 Next
               </Button>
@@ -340,15 +350,25 @@ function ProductFormModal({
     reset,
     formState: { errors },
   } = useForm<ProductFormData>({
-    resolver: yupResolver(productSchema),
+    resolver: yupResolver(productSchema, undefined, { mode: "sync", raw: true }),
   });
 
   useEffect(() => {
     if (open) {
       reset(
         product
-          ? { name: product.name, sku: product.sku, price: product.price, quantity: product.quantity }
-          : { name: "", sku: "", price: undefined as unknown as number, quantity: 0 }
+          ? {
+              name: product.name,
+              sku: product.sku,
+              price: product.price,
+              quantity: product.quantity,
+            }
+          : {
+              name: "",
+              sku: "",
+              price: undefined as unknown as number,
+              quantity: 0,
+            },
       );
     }
   }, [open, product, reset]);
@@ -370,10 +390,7 @@ function ProductFormModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mt-4 space-y-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" {...register("name")} />
@@ -408,11 +425,7 @@ function ProductFormModal({
 
             <div className="space-y-2">
               <Label htmlFor="quantity">Quantity</Label>
-              <Input
-                id="quantity"
-                type="number"
-                {...register("quantity")}
-              />
+              <Input id="quantity" type="number" {...register("quantity")} />
               {errors.quantity && (
                 <p className="text-xs text-destructive">
                   {errors.quantity.message}
@@ -425,7 +438,9 @@ function ProductFormModal({
 
           <DialogFooter>
             <DialogClose
-              render={<Button variant="outline" type="button" disabled={submitting} />}
+              render={
+                <Button variant="outline" type="button" disabled={submitting} />
+              }
             >
               Cancel
             </DialogClose>

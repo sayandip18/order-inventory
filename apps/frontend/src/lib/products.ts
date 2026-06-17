@@ -28,22 +28,26 @@ export interface ProductFormData {
 export async function fetchProducts(
   page: number,
   pageSize: number,
-  search?: string
+  search?: string,
 ): Promise<PaginatedProducts> {
   const params: Record<string, string | number> = { page, page_size: pageSize };
   if (search) params.search = search;
-  const { data } = await client.get<PaginatedProducts>("/products/", { params });
+  const { data } = await client.get<PaginatedProducts>("/products/", {
+    params,
+  });
   return data;
 }
 
-export async function createProduct(payload: ProductFormData): Promise<Product> {
+export async function createProduct(
+  payload: ProductFormData,
+): Promise<Product> {
   const { data } = await client.post<Product>("/products/", payload);
   return data;
 }
 
 export async function updateProduct(
   id: string,
-  payload: Partial<ProductFormData>
+  payload: Partial<ProductFormData>,
 ): Promise<Product> {
   const { data } = await client.put<Product>(`/products/${id}`, payload);
   return data;
