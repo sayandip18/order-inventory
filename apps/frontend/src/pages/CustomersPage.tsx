@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,8 +113,13 @@ export default function CustomersPage() {
       setDeleteOpen(false);
       setDeletingCustomer(null);
       reload();
-    } catch {
-      /* keep modal open so user can retry */
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data
+          ?.detail || "Failed to delete customer.";
+      toast.error(message);
+      setDeleteOpen(false);
+      setDeletingCustomer(null);
     } finally {
       setDeleting(false);
     }

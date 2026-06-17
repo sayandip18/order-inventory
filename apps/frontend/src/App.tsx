@@ -6,6 +6,7 @@ import ProductsPage from "@/pages/ProductsPage"
 import CustomersPage from "@/pages/CustomersPage"
 import OrdersPage from "@/pages/OrdersPage"
 import { AppLayout } from "@/components/AppLayout"
+import { Toaster } from "@/components/ui/sonner"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()
@@ -39,6 +40,8 @@ function GuestRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
+    <>
+    <Toaster richColors position="top-right" />
     <Routes>
       <Route
         path="/login"
@@ -62,5 +65,6 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    </>
   )
 }

@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.customer import Customer
+from app.models.order import Order
 from app.schemas.customer import (
     CustomerCreate,
     CustomerResponse,
@@ -104,5 +105,26 @@ async def delete_customer(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Customer not found",
         )
+    active_orders = await db.scalar(
+        select(func.count()).select_from(Order).where(
+            Order.customer_id == customer_id,
+            Order.cancelled == False,  # noqa: E712
+        )
+    )
+    if active_orders:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cannot delete customer with active orders",
+        )
+    cancelled_orders = (
+        await db.execute(
+            select(Order).where(
+                Order.customer_id == customer_id,
+                Order.cancelled == True,  # noqa: E712
+            )
+        )
+    ).scalars().all()
+    for order in cancelled_orders:
+        await db.delete(order)
     await db.delete(customer)
     await db.commit()

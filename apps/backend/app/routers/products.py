@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.models.order import OrderItem
 from app.models.product import Product
 from app.schemas.product import (
     PaginatedProductResponse,
@@ -135,6 +136,16 @@ async def delete_product(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product not found",
+        )
+    linked_items = await db.scalar(
+        select(func.count()).select_from(OrderItem).where(
+            OrderItem.product_id == product_id,
+        )
+    )
+    if linked_items:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cannot delete product linked to existing orders",
         )
     await db.delete(product)
     await db.commit()

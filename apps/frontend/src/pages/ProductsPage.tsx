@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,8 +125,13 @@ export default function ProductsPage() {
       setDeleteOpen(false);
       setDeletingProduct(null);
       reload();
-    } catch {
-      /* keep modal open so user can retry */
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data
+          ?.detail || "Failed to delete product.";
+      toast.error(message);
+      setDeleteOpen(false);
+      setDeletingProduct(null);
     } finally {
       setDeleting(false);
     }

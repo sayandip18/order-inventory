@@ -44,3 +44,5 @@ docker compose down -v
 - **Other Race Condition Prevention** — Product updates acquire row-level locks (`SELECT … FOR UPDATE`) to prevent lost updates when edits overlap with concurrent order creation. Order cancellation similarly locks affected product rows before restoring inventory, ensuring stock is never double-restored. Duplicate SKUs are guarded by a unique database index, with `IntegrityError` caught and surfaced as a 409 Conflict.
 
 - **Price Snapshots** — Each order line item records the product's unit price at the time of purchase. This decouples historical order data from future price changes, so order totals remain accurate regardless of subsequent product updates.
+
+- **User Deletion** — Customers cannot be deleted while they have active (non-cancelled) orders. The API returns a 409 Conflict in this case, preventing orphaned order records. If all of a customer's orders have been cancelled, deletion is allowed and those cancelled orders are cascade-deleted along with the customer.
