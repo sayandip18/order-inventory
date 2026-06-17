@@ -98,7 +98,9 @@ async def update_product(
     body: ProductUpdate,
     db: AsyncSession = Depends(get_db),
 ) -> Product:
-    result = await db.execute(select(Product).where(Product.id == product_id))
+    result = await db.execute(
+        select(Product).where(Product.id == product_id).with_for_update()
+    )
     product = result.scalar_one_or_none()
     if not product:
         raise HTTPException(
@@ -116,7 +118,7 @@ async def update_product(
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Product with SKU '{body.sku}' already exists",
+            detail=f"Product with SKU '{update_data.get('sku', 'unknown')}' already exists",
         )
     await db.refresh(product)
     return product

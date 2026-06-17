@@ -41,4 +41,6 @@ docker compose down -v
 
 - **Pessimistic Locking on Orders** — Order creation uses `SELECT … FOR UPDATE` to acquire row-level locks on the referenced product rows before checking and decrementing stock. Product rows are locked in a consistent ID-sorted order to prevent deadlocks. The entire operation (stock validation, decrement, order + item creation) runs inside a single atomic transaction — if any product has insufficient stock, the whole transaction rolls back with no side effects.
 
+- **Other Race Condition Prevention** — Product updates acquire row-level locks (`SELECT … FOR UPDATE`) to prevent lost updates when edits overlap with concurrent order creation. Order cancellation similarly locks affected product rows before restoring inventory, ensuring stock is never double-restored. Duplicate SKUs are guarded by a unique database index, with `IntegrityError` caught and surfaced as a 409 Conflict.
+
 - **Price Snapshots** — Each order line item records the product's unit price at the time of purchase. This decouples historical order data from future price changes, so order totals remain accurate regardless of subsequent product updates.
