@@ -1,0 +1,20 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Sayandip Halder", email = "sayandiph4@gmail.com"}
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi (>=0.137.1,<0.138.0)",
+    "uvicorn (>=0.49.0,<0.50.0)"
+]
+
+# This section tells Poetry 2.0+ to run in application (non-package) mode
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
