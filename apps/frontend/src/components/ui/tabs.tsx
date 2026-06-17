@@ -48,7 +48,7 @@ TabsList.displayName = "TabsList"
 const TabsTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }
->(({ className, value, ...props }, ref) => {
+>(({ className, value, onClick, ...props }, ref) => {
   const ctx = useTabsContext()
   return (
     <button
@@ -59,7 +59,10 @@ const TabsTrigger = React.forwardRef<
         ctx.value === value && "bg-background text-foreground shadow",
         className
       )}
-      onClick={() => ctx.setValue(value)}
+      onClick={(e) => {
+        ctx.setValue(value)
+        onClick?.(e)
+      }}
       {...props}
     />
   )

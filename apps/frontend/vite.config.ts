@@ -13,6 +13,9 @@ export default defineConfig({
   server: {
     proxy: {
       "/auth": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
+      "/products": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
+      "/customers": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
+      "/orders": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
     },
   },
 })
