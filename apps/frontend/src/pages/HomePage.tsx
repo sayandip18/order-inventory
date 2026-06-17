@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 import { client } from "@/lib/api";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Product {
@@ -20,7 +18,6 @@ interface DashboardData {
 const LOW_STOCK_THRESHOLD = 5;
 
 export default function HomePage() {
-  const { user, logout } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState("");
 
@@ -53,17 +50,9 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="p-8">
       <div className="mx-auto max-w-3xl space-y-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Inventory Dashboard</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.name}</span>
-            <Button variant="outline" size="sm" onClick={logout}>
-              Sign Out
-            </Button>
-          </div>
-        </div>
+        <h1 className="text-2xl font-bold">Inventory Dashboard</h1>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
