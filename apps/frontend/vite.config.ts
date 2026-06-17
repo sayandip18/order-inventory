@@ -11,11 +11,18 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
-      "/auth": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
-      "/products": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
-      "/customers": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
-      "/orders": process.env.VITE_PROXY_TARGET || "http://localhost:8000",
-    },
+    proxy: Object.fromEntries(
+      ["/auth", "/products", "/customers", "/orders"].map((path) => [
+        path,
+        {
+          target: process.env.VITE_PROXY_TARGET || "http://localhost:8000",
+          bypass(req: { headers: { accept?: string }; url?: string }) {
+            if (req.headers.accept?.includes("text/html")) {
+              return req.url;
+            }
+          },
+        },
+      ]),
+    ),
   },
 })

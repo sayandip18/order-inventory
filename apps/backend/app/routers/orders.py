@@ -5,6 +5,7 @@ from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -94,8 +95,15 @@ async def create_order(
     )
     db.add(order)
     await db.commit()
-    await db.refresh(order)
-    return order
+    result = await db.execute(
+        select(Order)
+        .where(Order.id == order.id)
+        .options(
+            selectinload(Order.customer),
+            selectinload(Order.items).selectinload(OrderItem.product),
+        )
+    )
+    return result.scalar_one()
 
 
 @router.get("/", response_model=PaginatedOrderResponse)
